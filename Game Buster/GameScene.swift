@@ -44,11 +44,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         setupBackground()
         addSwipeGesture()
         initializeScore()
-        addLives()
+        addLives(lives: 3)
         addWaste()
         physicsWorld.gravity = CGVector(dx: 0, dy: 0)
         physicsWorld.contactDelegate = self
-        var timeInterval = 0.75
+        let timeInterval = 0.75
         fallingWasteTime =  Timer.scheduledTimer(timeInterval: timeInterval, target: self, selector: #selector(addWaste), userInfo: nil, repeats: true)
     }
     
@@ -134,7 +134,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     private func initializeScore(){
         //Inizializzo il punteggio dandogli un testo iniziale e una posizione nello schermo
         scoreLabel = SKLabelNode(text: "Score: 0")
-        scoreLabel.position = CGPoint(x: 100, y: self.frame.size.height - 85)
+        scoreLabel.position = CGPoint(x: 97, y: self.frame.size.height - 100)
         scoreLabel.fontName = "AmericanTypewriter-Bold"
         scoreLabel.fontSize = 36
         scoreLabel.fontColor = UIColor.white
@@ -144,21 +144,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     //IMPLEMENTO LE VITE
-    func addLives(){
+    func addLives(lives: Int){
         livesArray = [SKSpriteNode]()
-            
-            let screenHeight = self.frame.size.height
-            let yOffsetPercentage: CGFloat = 0.1  // Puoi regolare questa percentuale come preferisci
-            
-            for live in 1 ... 3 {
-                let liveNode = SKSpriteNode(imageNamed: "love")
-                liveNode.size = CGSize(width: 100, height: 100)  // Imposta la dimensione desiderata
-                let yOffset = screenHeight - (yOffsetPercentage * screenHeight) - CGFloat(live) * liveNode.size.height
-                liveNode.position = CGPoint(x: self.frame.size.width - CGFloat(4 - live) * liveNode.size.width, y: yOffset)
-                self.addChild(liveNode)
-                livesArray.append(liveNode)
-            }
+        for i in 1...lives{
+            let live = SKSpriteNode(imageNamed: "love")
+            live.setScale(0.3)
+            live.position = CGPoint(x: size.width * 0.45 - CGFloat(i) * 50 + 238.0, y: scoreLabel.position.y - 10)
+            live.name = "live"
+            live.zPosition = 10
+            livesArray.append(live)
+            addChild(live)
         }
+    }
     
     //---FUNZIONE CHE AGGIUNGE E GESTISCE LA CADUTA DEI RIFIUTI---
     @objc func addWaste(){
@@ -170,8 +167,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         //POSIZIONI CASUALI IN VERTICALE
         let randomColumn = Int(arc4random_uniform(3))
         let positionX = thirdScreenWidth * CGFloat(randomColumn) + thirdScreenWidth / 2
-        let animationDuration: TimeInterval = 6
-        var actionArray = [SKAction]()
         waste.position = CGPoint(x: positionX, y: self.frame.size.height + waste.size.height)
         waste.physicsBody = SKPhysicsBody(rectangleOf: waste.size)
         waste.physicsBody?.isDynamic = true
@@ -179,7 +174,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         waste.physicsBody?.contactTestBitMask = PhysicsCategory.player
         waste.physicsBody?.collisionBitMask = PhysicsCategory.none
         waste.physicsBody?.usesPreciseCollisionDetection = true
+        
+        let animationDuration: TimeInterval = 6
+        var actionArray = [SKAction]()
+        
         actionArray.append(SKAction.move(to: CGPoint(x: positionX, y: -waste.size.height), duration: TimeInterval(animationDuration)))
+        let wasteOutOfScreenAction = SKAction.run {
+               // Verifica se la spazzatura è uscita dallo schermo
+               if waste.position.y < 0 {
+                   self.notCollisionFunc(waste: waste)
+               }
+           }
+        actionArray.append(wasteOutOfScreenAction)
         actionArray.append(SKAction.removeFromParent())
         waste.run(SKAction.sequence(actionArray))
         addChild(waste)
@@ -190,6 +196,24 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         print("COLPITO")
         waste.removeFromParent()
         score += 1
+    }
+    func notCollisionFunc(waste: SKSpriteNode){
+        print("NON COLPITO")
+        waste.removeFromParent()
+        if let live = livesArray.last{
+            live.removeFromParent()
+            livesArray.removeLast()
+            
+            if livesArray.isEmpty{
+                gameOver()
+            }
+        }
+        
+    }
+    
+    //FUNZIONE CHE GESTISCE IL GAMEOVER
+    func gameOver(){
+        print("Game over!")
     }
     
     func didBegin(_ contact: SKPhysicsContact) {
@@ -209,7 +233,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             (secondBody.categoryBitMask & PhysicsCategory.waste != 0){
             collisionFunc(player: firstBody.node as! SKSpriteNode, waste:
                             secondBody.node as! SKSpriteNode)
-        }
+        }/*else if(firstBody.categoryBitMask & PhysicsCategory.player == 0) &&
+                    (secondBody.categoryBitMask & PhysicsCategory.waste == 0){
+            notCollisionFunc(player: firstBody.node as! SKSpriteNode, waste:
+                                secondBody.node as! SKSpriteNode)
+        }*/
     }
 }
 

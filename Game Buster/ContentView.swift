@@ -14,7 +14,7 @@ struct ContentView: View {
     private var screenHeight: CGFloat { UIScreen.main.bounds.size.height }
     
     var scene : SKScene{
-        let scene = GameScene()
+        let scene = MainMenu()
         scene.size = CGSize(width: screenWidth, height: screenHeight)
         scene.scaleMode = .fill
         return scene
