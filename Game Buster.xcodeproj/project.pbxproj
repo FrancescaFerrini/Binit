@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		273E16FB2B2B586100E3AED9 /* GameOverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 273E16FA2B2B586100E3AED9 /* GameOverView.swift */; };
 		2796D8E12B260F9200BD9A47 /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2796D8E02B260F9200BD9A47 /* Main.swift */; };
 		2796D8E32B260F9200BD9A47 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2796D8E22B260F9200BD9A47 /* ContentView.swift */; };
 		2796D8E52B260F9300BD9A47 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2796D8E42B260F9300BD9A47 /* Assets.xcassets */; };
@@ -20,6 +21,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		273E16FA2B2B586100E3AED9 /* GameOverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameOverView.swift; sourceTree = "<group>"; };
 		2796D8DD2B260F9200BD9A47 /* Game Buster.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Game Buster.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2796D8E02B260F9200BD9A47 /* Main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Main.swift; sourceTree = "<group>"; };
 		2796D8E22B260F9200BD9A47 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -71,6 +73,7 @@
 				2796D8F52B289A7B00BD9A47 /* SettingsMenu.swift */,
 				2796D8F72B289A9000BD9A47 /* LearnMenu.swift */,
 				2796D8EE2B260FE300BD9A47 /* GameScene.swift */,
+				273E16FA2B2B586100E3AED9 /* GameOverView.swift */,
 				2796D8FB2B28BC9A00BD9A47 /* Clouds.sks */,
 				2796D8E42B260F9300BD9A47 /* Assets.xcassets */,
 				2796D8E62B260F9300BD9A47 /* Preview Content */,
@@ -165,6 +168,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				273E16FB2B2B586100E3AED9 /* GameOverView.swift in Sources */,
 				2796D8EF2B260FE300BD9A47 /* GameScene.swift in Sources */,
 				2796D8F62B289A7B00BD9A47 /* SettingsMenu.swift in Sources */,
 				2796D8E32B260F9200BD9A47 /* ContentView.swift in Sources */,

@@ -21,8 +21,11 @@ struct PhysicsCategory{
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
     //VARIABILI
+    var currentBin: String = "bianco"
+    var currentWaste: String = "paper1"
     private var swipeRightGesture: UISwipeGestureRecognizer!
     private var swipeLeftGesture: UISwipeGestureRecognizer!
+    var changePlayerAssetTimer: Timer?
     var lifeIndexCount = 0
     //var positionAdd:CGFloat = (x: 100, y: 100)
     var player: SKSpriteNode!
@@ -31,7 +34,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var isMovingToTheLeft: Bool = false
     var scoreLabel: SKLabelNode!
     var fallingWasteTime : Timer!
-    var possibleWaste = ["banana", "compost1", "compost2", "compost3"]
+    var possibleWaste = ["paper1", "plastic1", "indifferenziato1"]
     var score: Int = 0 {
         //didSet viene chiamata automaticamente ogni volta che la variabile score viene modificata, e viene utilizzata per aggiornare dinamicamente il testo dell'etichetta del punteggio.
         didSet{
@@ -48,8 +51,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         addWaste()
         physicsWorld.gravity = CGVector(dx: 0, dy: 0)
         physicsWorld.contactDelegate = self
-        let timeInterval = 0.75
-        fallingWasteTime =  Timer.scheduledTimer(timeInterval: timeInterval, target: self, selector: #selector(addWaste), userInfo: nil, repeats: true)
+        fallingWasteTime =  Timer.scheduledTimer(timeInterval: 2.0, target: self, selector: #selector(addWaste), userInfo: nil, repeats: true)
+        changePlayerAssetTimer = Timer.scheduledTimer(timeInterval: 10.0, target: self, selector: #selector(changePlayerAsset), userInfo: nil, repeats: true)
+        
     }
     
     //---IMPOSTIAMO BACKGROUND---
@@ -66,7 +70,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     //---IMPOSTIAMO CESTINO---
     private func setupBin(at position: CGPoint){
-        player = SKSpriteNode(imageNamed: "binbak2")
+        player = SKSpriteNode(imageNamed: "bianco")
         player.setScale(0.2)
         player.anchorPoint = CGPoint(x: 0.49, y: 0.5)
         player.name = "player"
@@ -85,7 +89,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         //##############
         player.physicsBody = SKPhysicsBody(circleOfRadius: (player.size.width * 0.4) / 2)
         player.physicsBody?.isDynamic = true
-        print("SONO QUIII PLAYER")
         player.physicsBody?.categoryBitMask = PhysicsCategory.player
         player.physicsBody?.contactTestBitMask = PhysicsCategory.waste
         player.physicsBody?.collisionBitMask = PhysicsCategory.none
@@ -143,6 +146,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self .addChild(scoreLabel)
     }
     
+    //FUNZIONE PER IL CAMBIAMENTO DELL'ASSET
+    @objc func changePlayerAsset() {
+        
+        
+        
+        //let binOptions = ["giallo", "bianco", "grigio"]
+        //let randomBinIndex = Int(arc4random_uniform(UInt32(binOptions.count)))
+        let binOptions = ["bianco", "giallo", "grigio"].randomElement() ?? "bianco"
+        currentBin = binOptions
+        player.texture = SKTexture(imageNamed: binOptions)
+        //player.texture = SKTexture(imageNamed: "giallo")
+        
+    }
+    
     //IMPLEMENTO LE VITE
     func addLives(lives: Int){
         livesArray = [SKSpriteNode]()
@@ -161,7 +178,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     @objc func addWaste(){
         //UTILIZZO LIBERIRA GAMEPLAYKIT
         possibleWaste = GKRandomSource.sharedRandom().arrayByShufflingObjects(in: possibleWaste) as! [String]
-        let waste = SKSpriteNode(imageNamed: possibleWaste[0])
+        currentWaste = possibleWaste[0]
+        let waste = SKSpriteNode(imageNamed: currentWaste)
+        print(currentWaste)
         let screenWidth = self.view?.bounds.width ?? 1.0
         let thirdScreenWidth = screenWidth / 3
         //POSIZIONI CASUALI IN VERTICALE
@@ -175,16 +194,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         waste.physicsBody?.collisionBitMask = PhysicsCategory.none
         waste.physicsBody?.usesPreciseCollisionDetection = true
         
-        let animationDuration: TimeInterval = 6
+        let animationDuration: TimeInterval = 10
         var actionArray = [SKAction]()
         
         actionArray.append(SKAction.move(to: CGPoint(x: positionX, y: -waste.size.height), duration: TimeInterval(animationDuration)))
         let wasteOutOfScreenAction = SKAction.run {
-               // Verifica se la spazzatura è uscita dallo schermo
-               if waste.position.y < 0 {
-                   self.notCollisionFunc(waste: waste)
-               }
-           }
+            // Verifica se la spazzatura è uscita dallo schermo
+            if waste.position.y < 0 {
+                self.notCollisionFunc(waste: waste)
+            }
+        }
         actionArray.append(wasteOutOfScreenAction)
         actionArray.append(SKAction.removeFromParent())
         waste.run(SKAction.sequence(actionArray))
@@ -211,33 +230,141 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
     }
     
-    //FUNZIONE CHE GESTISCE IL GAMEOVER
-    func gameOver(){
-        print("Game over!")
-    }
     
-    func didBegin(_ contact: SKPhysicsContact) {
-        print("SONO QUI")
-        var firstBody : SKPhysicsBody
-        var secondBody : SKPhysicsBody
+    //FUNZIONE CHE GESTISCE IL GAMEOVER
+       func gameOver(){
+           print("Game over!")
+           let scene = GameOverView(size: size)
+           scene.scaleMode = scaleMode
+           view!.presentScene (scene, transition: .doorsCloseVertical(withDuration: 0.8))
+       }
+       
+       func didBegin(_ contact: SKPhysicsContact) {
+           print("SONO QUI")
+           var firstBody : SKPhysicsBody
+           var secondBody : SKPhysicsBody
+           
+           if contact.bodyA.categoryBitMask < contact.bodyB.categoryBitMask{
+               firstBody = contact.bodyA
+               secondBody = contact.bodyB
+           }
+           else{
+               firstBody = contact.bodyB
+               secondBody = contact.bodyA
+           }
+           if(firstBody.categoryBitMask & PhysicsCategory.player != 0) &&
+               (secondBody.categoryBitMask & PhysicsCategory.waste != 0){
+               collisionFunc(player: firstBody.node as! SKSpriteNode, waste:
+                               secondBody.node as! SKSpriteNode)
+           }/*else if(firstBody.categoryBitMask & PhysicsCategory.player == 0) &&
+                       (secondBody.categoryBitMask & PhysicsCategory.waste == 0){
+               notCollisionFunc(player: firstBody.node as! SKSpriteNode, waste:
+                                   secondBody.node as! SKSpriteNode)
+           }*/
+       }
+   }
+
+    
+    /*func didBegin(_ contact: SKPhysicsContact) {
         
-        if contact.bodyA.categoryBitMask < contact.bodyB.categoryBitMask{
+        var firstBody: SKPhysicsBody
+        var secondBody: SKPhysicsBody
+        
+        if contact.bodyA.categoryBitMask < contact.bodyB.categoryBitMask {
             firstBody = contact.bodyA
             secondBody = contact.bodyB
-        }
-        else{
+        } else {
             firstBody = contact.bodyB
             secondBody = contact.bodyA
         }
-        if(firstBody.categoryBitMask & PhysicsCategory.player != 0) &&
-            (secondBody.categoryBitMask & PhysicsCategory.waste != 0){
-            collisionFunc(player: firstBody.node as! SKSpriteNode, waste:
-                            secondBody.node as! SKSpriteNode)
-        }/*else if(firstBody.categoryBitMask & PhysicsCategory.player == 0) &&
-                    (secondBody.categoryBitMask & PhysicsCategory.waste == 0){
-            notCollisionFunc(player: firstBody.node as! SKSpriteNode, waste:
-                                secondBody.node as! SKSpriteNode)
-        }*/
-    }
-}
+        
+        if let playerNode = firstBody.node as? SKSpriteNode, let wasteNode = secondBody.node as? SKSpriteNode {
+            // Verifica se la collisione coinvolge il giocatore e il rifiuto
+            // let wasteCategory = wasteNode.name?.components(separatedBy: CharacterSet.decimalDigits).first
+            // let playerCategory = playerNode.name
+            
+            let wasteCategory = currentWaste
+            let playerCategory = currentBin
+            
+            if wasteCategory != nil || playerCategory != nil {
+                if playerCategory == "bianco"  {
+                    if wasteCategory == "paper1" {
+                        // La collisione avviene tra "bianco" (cestino) e "paper" (rifiuto)
+                        collisionFunc(player: playerNode, waste: wasteNode)
+                        print("PRESO")
+                    } else {
+                        notCollisionFunc(waste: wasteNode)
+                        print("NON PRESO")
+                    }
+                } else if playerCategory == "giallo" {
+                    if wasteCategory == "plastic1" {
+                        // La collisione avviene tra "giallo" (cestino) e "plastica" (rifiuto)
+                        collisionFunc(player: playerNode, waste: wasteNode)
+                        print("PRESO")
+                    } else {
+                        notCollisionFunc(waste: wasteNode)
+                        print("NON PRESO")
+                    }
+                } else if playerCategory == "grigio" {
+                    if wasteCategory == "indifferenziato1" {
+                        // La collisione avviene tra "grigio" (cestino) e "generale" (rifiuto)
+                        collisionFunc(player: playerNode, waste: wasteNode)
+                        print("PRESO")
+                    } else {
+                        notCollisionFunc(waste: wasteNode)
+                        print("NON PRESO")
+                    }
+                } else {
+                    // Il giocatore non corrisponde a nessuna categoria nota
+                    notCollisionFunc(waste: wasteNode)
+                }
+            }
+
+        }
+    }*/
+    
+    
+    
+    /*func didBegin(_ contact: SKPhysicsContact) {
+     print("AJAAJJA!")
+     var firstBody: SKPhysicsBody
+     var secondBody: SKPhysicsBody
+     
+     if contact.bodyA.categoryBitMask < contact.bodyB.categoryBitMask {
+     firstBody = contact.bodyA
+     secondBody = contact.bodyB
+     } else {
+     firstBody = contact.bodyB
+     secondBody = contact.bodyA
+     }
+     
+     let playerNode = firstBody.node as? SKSpriteNode
+     let wasteNode = secondBody.node as? SKSpriteNode
+     // Controlla se la collisione coinvolge il giocatore e il rifiuto
+     let wasteCategory = wasteNode?.name?.components(separatedBy: CharacterSet.decimalDigits).first
+     let playerCategory = playerNode?.texture?.description.components(separatedBy: CharacterSet.decimalDigits).first
+     
+     
+     
+     // La collisione avviene tra il giocatore e il rifiuto corrispondente
+     if playerCategory == "bianco" && wasteCategory!.hasPrefix("papere") && (firstBody.categoryBitMask & PhysicsCategory.player != 0) &&
+     (secondBody.categoryBitMask & PhysicsCategory.waste != 0) {
+     print("BIANCO")
+     // La collisione avviene tra "bianco" (cestino) e "paper" (rifiuto)
+     collisionFunc(player: playerNode!, waste: wasteNode!)
+     } else if playerCategory == "giallo" && wasteCategory!.hasPrefix("plastica") && (firstBody.categoryBitMask & PhysicsCategory.player != 0) &&
+     (secondBody.categoryBitMask & PhysicsCategory.waste != 0) {
+     print("GIALLO")
+     // La collisione avviene tra "giallo" (cestino) e "bottle" (rifiuto)
+     collisionFunc(player: playerNode!, waste: wasteNode!)
+     } else if playerCategory == "grigio" && wasteCategory!.hasPrefix("generale") && (firstBody.categoryBitMask & PhysicsCategory.player != 0) &&
+     (secondBody.categoryBitMask & PhysicsCategory.waste != 0) {
+     print("GRIGIO")
+     // La collisione avviene tra "grigio" (cestino) e "general" (rifiuto)
+     collisionFunc(player: playerNode!, waste: wasteNode!)
+     } else {
+     // La collisione non è tra il giocatore e il rifiuto corrispondente
+     notCollisionFunc(waste: wasteNode!)
+     }
+     }*/
 
