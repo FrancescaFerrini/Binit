@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		273E16FB2B2B586100E3AED9 /* GameOverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 273E16FA2B2B586100E3AED9 /* GameOverView.swift */; };
+		273E16FF2B2CBA4100E3AED9 /* ScoreBoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 273E16FE2B2CBA4100E3AED9 /* ScoreBoardView.swift */; };
+		273E17012B2CBAA100E3AED9 /* ScoreGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 273E17002B2CBAA100E3AED9 /* ScoreGenerator.swift */; };
+		273E170B2B2DBD6100E3AED9 /* PlaySound.swift in Sources */ = {isa = PBXBuildFile; fileRef = 273E170A2B2DBD6100E3AED9 /* PlaySound.swift */; };
 		2796D8E12B260F9200BD9A47 /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2796D8E02B260F9200BD9A47 /* Main.swift */; };
 		2796D8E32B260F9200BD9A47 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2796D8E22B260F9200BD9A47 /* ContentView.swift */; };
 		2796D8E52B260F9300BD9A47 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2796D8E42B260F9300BD9A47 /* Assets.xcassets */; };
@@ -22,6 +25,10 @@
 
 /* Begin PBXFileReference section */
 		273E16FA2B2B586100E3AED9 /* GameOverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameOverView.swift; sourceTree = "<group>"; };
+		273E16FE2B2CBA4100E3AED9 /* ScoreBoardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreBoardView.swift; sourceTree = "<group>"; };
+		273E17002B2CBAA100E3AED9 /* ScoreGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreGenerator.swift; sourceTree = "<group>"; };
+		273E170A2B2DBD6100E3AED9 /* PlaySound.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaySound.swift; sourceTree = "<group>"; };
+		273E170F2B2DDF0800E3AED9 /* NuovoBacgroundLoop.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = NuovoBacgroundLoop.mp3; sourceTree = "<group>"; };
 		2796D8DD2B260F9200BD9A47 /* Game Buster.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Game Buster.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2796D8E02B260F9200BD9A47 /* Main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Main.swift; sourceTree = "<group>"; };
 		2796D8E22B260F9200BD9A47 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -47,6 +54,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		273E170E2B2DDEFB00E3AED9 /* Sounds */ = {
+			isa = PBXGroup;
+			children = (
+				273E170F2B2DDF0800E3AED9 /* NuovoBacgroundLoop.mp3 */,
+			);
+			path = Sounds;
+			sourceTree = "<group>";
+		};
 		2796D8D42B260F9200BD9A47 = {
 			isa = PBXGroup;
 			children = (
@@ -67,6 +82,7 @@
 		2796D8DF2B260F9200BD9A47 /* Game Buster */ = {
 			isa = PBXGroup;
 			children = (
+				273E170E2B2DDEFB00E3AED9 /* Sounds */,
 				2796D8E02B260F9200BD9A47 /* Main.swift */,
 				2796D8E22B260F9200BD9A47 /* ContentView.swift */,
 				2796D8F32B289A5700BD9A47 /* MainMenu.swift */,
@@ -74,7 +90,10 @@
 				2796D8F72B289A9000BD9A47 /* LearnMenu.swift */,
 				2796D8EE2B260FE300BD9A47 /* GameScene.swift */,
 				273E16FA2B2B586100E3AED9 /* GameOverView.swift */,
+				273E16FE2B2CBA4100E3AED9 /* ScoreBoardView.swift */,
+				273E17002B2CBAA100E3AED9 /* ScoreGenerator.swift */,
 				2796D8FB2B28BC9A00BD9A47 /* Clouds.sks */,
+				273E170A2B2DBD6100E3AED9 /* PlaySound.swift */,
 				2796D8E42B260F9300BD9A47 /* Assets.xcassets */,
 				2796D8E62B260F9300BD9A47 /* Preview Content */,
 			);
@@ -172,8 +191,11 @@
 				2796D8EF2B260FE300BD9A47 /* GameScene.swift in Sources */,
 				2796D8F62B289A7B00BD9A47 /* SettingsMenu.swift in Sources */,
 				2796D8E32B260F9200BD9A47 /* ContentView.swift in Sources */,
+				273E17012B2CBAA100E3AED9 /* ScoreGenerator.swift in Sources */,
+				273E170B2B2DBD6100E3AED9 /* PlaySound.swift in Sources */,
 				2796D8F82B289A9000BD9A47 /* LearnMenu.swift in Sources */,
 				2796D8E12B260F9200BD9A47 /* Main.swift in Sources */,
+				273E16FF2B2CBA4100E3AED9 /* ScoreBoardView.swift in Sources */,
 				2796D8F42B289A5700BD9A47 /* MainMenu.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

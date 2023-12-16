@@ -76,7 +76,7 @@ class MainMenu: SKScene {
         }
         
         if node.name == "learnButton" {
-            let scene = LearnMenu()
+            let scene = ScoreBoardView()
             scene.size = CGSize(width: screenWidth, height: screenHeight)
             scene.scaleMode = .fill
             view!.presentScene(scene, transition: .doorsOpenVertical(withDuration: 0.3))

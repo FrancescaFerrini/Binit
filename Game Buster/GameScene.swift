@@ -7,7 +7,7 @@
 
 import SpriteKit
 import GameplayKit
-
+import AVFoundation
 
 struct PhysicsCategory{
     static let none : UInt32 = 0
@@ -21,6 +21,7 @@ struct PhysicsCategory{
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
     //VARIABILI
+    let generator = UIImpactFeedbackGenerator(style: .medium)
     var currentBin: String = "bianco"
     var currentWaste: String = "paper1"
     private var swipeRightGesture: UISwipeGestureRecognizer!
@@ -30,11 +31,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     //var positionAdd:CGFloat = (x: 100, y: 100)
     var player: SKSpriteNode!
     var livesArray: [SKSpriteNode]!
+    var pauseButton: SKSpriteNode = SKSpriteNode(imageNamed: "pause")
+    var containerNode = SKNode()
+    
+    private var screenWidth: CGFloat { UIScreen.main.bounds.size.width }
+    private var screenHeight: CGFloat { UIScreen.main.bounds.size.height }
     var isMovingToTheRight: Bool = false
     var isMovingToTheLeft: Bool = false
     var scoreLabel: SKLabelNode!
     var fallingWasteTime : Timer!
-    var possibleWaste = ["paper1", "plastic1", "indifferenziato1"]
+    var baseAnimationDuration: TimeInterval = 10.0
+    var animationDurationIncrement: TimeInterval = 1.0
+    var initialTimeInterval: TimeInterval = 2.6
+    var timeIntervalDecrease: TimeInterval = 0.2
+    var possibleWaste = ["paper1", "paper2", "plastic1", "plastic2", "indifferenziato1","indifferenziato2"]
+    var possibleBin = ["bianco", "giallo", "marrone"]
+    var increaseSpeedTimer: Timer?
     var score: Int = 0 {
         //didSet viene chiamata automaticamente ogni volta che la variabile score viene modificata, e viene utilizzata per aggiornare dinamicamente il testo dell'etichetta del punteggio.
         didSet{
@@ -48,11 +60,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         addSwipeGesture()
         initializeScore()
         addLives(lives: 3)
+        //addPause()
         addWaste()
         physicsWorld.gravity = CGVector(dx: 0, dy: 0)
         physicsWorld.contactDelegate = self
-        fallingWasteTime =  Timer.scheduledTimer(timeInterval: 2.0, target: self, selector: #selector(addWaste), userInfo: nil, repeats: true)
-        changePlayerAssetTimer = Timer.scheduledTimer(timeInterval: 10.0, target: self, selector: #selector(changePlayerAsset), userInfo: nil, repeats: true)
+        fallingWasteTime =  Timer.scheduledTimer(timeInterval: initialTimeInterval, target: self, selector: #selector(addWaste), userInfo: nil, repeats: true)
+        changePlayerAssetTimer = Timer.scheduledTimer(timeInterval: 15.0, target: self, selector: #selector(changePlayerAsset), userInfo: nil, repeats: true)
+        increaseSpeedTimer = Timer.scheduledTimer(timeInterval: 15.0, target: self, selector: #selector(increaseAnimationSpeed), userInfo: nil, repeats: true)
         
     }
     
@@ -66,7 +80,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let playerInitialPosition = CGPoint(x: frame.width/2, y: frame.height/7)
         setupBin(at: playerInitialPosition)
         addChild(background)
+        //playSound(sound: "NuovoBacgroundLoop", type: "mp3")
     }
+
     
     //---IMPOSTIAMO CESTINO---
     private func setupBin(at position: CGPoint){
@@ -81,10 +97,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let xConstraint = SKConstraint.positionX(xRange)
         player.constraints = [xConstraint]
         player.physicsBody?.affectedByGravity = false
-        /*player.physicsBody? = SKPhysicsBody(texture: player.texture!, size: player.size)
-         player.physicsBody?.categoryBitMask = PhysicsCategory.player
-         player.physicsBody?.isDynamic = true*/
-        //player.physicsBody?.collisionBitMask = wasteCategory
         
         //##############
         player.physicsBody = SKPhysicsBody(circleOfRadius: (player.size.width * 0.4) / 2)
@@ -92,8 +104,27 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         player.physicsBody?.categoryBitMask = PhysicsCategory.player
         player.physicsBody?.contactTestBitMask = PhysicsCategory.waste
         player.physicsBody?.collisionBitMask = PhysicsCategory.none
-        //##############
+      
         addChild(player)
+    }
+    
+    @objc private func increaseAnimationSpeed() {
+        if baseAnimationDuration > 2 {
+            baseAnimationDuration -= animationDurationIncrement
+        }
+        else{
+            baseAnimationDuration = 2
+        }
+        if initialTimeInterval > 0.2 {
+            //fallingWasteTime.invalidate()  // Invalida il timer corrente
+            initialTimeInterval -= timeIntervalDecrease
+            print("***TEMPO CADUTA\(initialTimeInterval)")
+        }
+        else{
+            initialTimeInterval = 0.2
+        }
+        
+       
     }
     
     //---FUNZIONE CHE RICHIAMA LO SWIPE---
@@ -148,15 +179,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     //FUNZIONE PER IL CAMBIAMENTO DELL'ASSET
     @objc func changePlayerAsset() {
-        
-        
-        
-        //let binOptions = ["giallo", "bianco", "grigio"]
-        //let randomBinIndex = Int(arc4random_uniform(UInt32(binOptions.count)))
-        let binOptions = ["bianco", "giallo", "grigio"].randomElement() ?? "bianco"
+        let binOptions = ["bianco", "giallo", "marrone"].randomElement() ?? "bianco"
         currentBin = binOptions
         player.texture = SKTexture(imageNamed: binOptions)
-        //player.texture = SKTexture(imageNamed: "giallo")
         
     }
     
@@ -166,7 +191,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         for i in 1...lives{
             let live = SKSpriteNode(imageNamed: "love")
             live.setScale(0.3)
-            live.position = CGPoint(x: size.width * 0.45 - CGFloat(i) * 50 + 238.0, y: scoreLabel.position.y - 10)
+            live.position = CGPoint(x: size.width * 0.45 - CGFloat(i) * 50 + 17.0, y: scoreLabel.position.y - 60)
             live.name = "live"
             live.zPosition = 10
             livesArray.append(live)
@@ -174,13 +199,77 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    //CREAZIONE TASTO PAUSA
+   /* func addPause(){
+        pauseButton.name = "pause"
+        pauseButton.setScale(0.5)
+        pauseButton.zPosition = 10
+        pauseButton.position = CGPoint(x: 350, y: self.frame.size.height - 2)
+        pauseButton.isUserInteractionEnabled = true
+        
+        addChild(pauseButton)
+    }
+    
+    //IMPLEMENTO IL PANNELLO DELLA PAUSA
+    func createPanel(){
+        
+        let panel = SKSpriteNode(imageNamed: "rectangle")
+        panel.name = "panel"
+        panel.zPosition = 60.0
+        panel.setScale(0.7)
+        panel.position = CGPoint(x: 200, y: self.frame.size.height - 400)
+        addChild(panel)
+        
+        let play = SKSpriteNode(imageNamed: "play")
+        play.zPosition = 70.0
+        play.name = "play"
+        play.setScale(0.3)
+        play.position = CGPoint(x: -panel.frame.width/2.0 + play.frame.width*1.8, y:0.0)
+        panel.addChild(play)
+        
+        let quit = SKSpriteNode(imageNamed: "arrow")
+        quit.zPosition = 70.0
+        quit.name = "arrow"
+        quit.setScale(0.3)
+        quit.position = CGPoint(x: panel.frame.width/2.0 - quit.frame.width*1.8, y:0.0)
+        panel.addChild(quit)
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesBegan(touches, with: event)
+        
+        guard let touch = touches.first else { return }
+        let location = touch.location(in: self)
+        let touchedNode = atPoint(location)
+        
+        if touchedNode.name == "pause" {
+            if !isPaused {
+                createPanel()
+                isPaused = true
+            }
+        } else if touchedNode.name == "arrow" {
+            let scene = MainMenu()
+            scene.size = CGSize(width: screenWidth, height: screenHeight)
+            scene.scaleMode = .fill
+            view!.presentScene(scene, transition: .doorsOpenVertical(withDuration: 0.3))
+            changePlayerAssetTimer?.invalidate()
+            changePlayerAssetTimer = nil
+        } else if touchedNode.name == "play" {
+            isPaused = false
+            for child in children {
+                if child.name == "panel" {
+                    child.removeFromParent()
+                }
+            }
+        }
+    }*/
+    
     //---FUNZIONE CHE AGGIUNGE E GESTISCE LA CADUTA DEI RIFIUTI---
     @objc func addWaste(){
         //UTILIZZO LIBERIRA GAMEPLAYKIT
         possibleWaste = GKRandomSource.sharedRandom().arrayByShufflingObjects(in: possibleWaste) as! [String]
         currentWaste = possibleWaste[0]
         let waste = SKSpriteNode(imageNamed: currentWaste)
-        print(currentWaste)
         let screenWidth = self.view?.bounds.width ?? 1.0
         let thirdScreenWidth = screenWidth / 3
         //POSIZIONI CASUALI IN VERTICALE
@@ -194,16 +283,37 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         waste.physicsBody?.collisionBitMask = PhysicsCategory.none
         waste.physicsBody?.usesPreciseCollisionDetection = true
         
-        let animationDuration: TimeInterval = 10
+        
+        waste.name = currentWaste
+        waste.userData = NSMutableDictionary()
+        waste.userData?.setValue(currentWaste, forKey: "wasteType")
+        
+        var animationDuration: TimeInterval = baseAnimationDuration
+        print("###TEMPO\(animationDuration)")
         var actionArray = [SKAction]()
         
         actionArray.append(SKAction.move(to: CGPoint(x: positionX, y: -waste.size.height), duration: TimeInterval(animationDuration)))
-        let wasteOutOfScreenAction = SKAction.run {
-            // Verifica se la spazzatura è uscita dallo schermo
+        let wasteType = waste.userData?.value(forKey: "wasteType") as? String
+        let wasteOutOfScreenAction = SKAction.run { [self] in
+         // Verifica se la spazzatura è uscita dallo schermo
             if waste.position.y < 0 {
-                self.notCollisionFunc(waste: waste)
+                if let wasteType = waste.userData?.value(forKey: "wasteType") as? String {
+                    if currentBin == "bianco" && wasteType.hasPrefix("paper") {
+                        self.notCollisionFunc(waste: waste)
+                        print("PERSO")
+                    } else if currentBin == "giallo" && wasteType.hasPrefix("plastic") {
+                        self.notCollisionFunc(waste: waste)
+                        //print("PERSO")
+                    } else if currentBin == "marrone" && wasteType.hasPrefix("indifferenziato") {
+                        self.notCollisionFunc(waste: waste)
+                        //print("PERSO")
+                    } else {
+                        //print("FUORI OK")
+                    }
+                }
             }
-        }
+
+         }
         actionArray.append(wasteOutOfScreenAction)
         actionArray.append(SKAction.removeFromParent())
         waste.run(SKAction.sequence(actionArray))
@@ -212,12 +322,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     //---FUNZIONE CHE GESTISCE LA COLLISIONE---
     func collisionFunc(player: SKSpriteNode, waste: SKSpriteNode){
-        print("COLPITO")
+        //print("COLPITO")
+        generator.impactOccurred()
         waste.removeFromParent()
         score += 1
     }
     func notCollisionFunc(waste: SKSpriteNode){
-        print("NON COLPITO")
+        //print("NON COLPITO")
         waste.removeFromParent()
         if let live = livesArray.last{
             live.removeFromParent()
@@ -231,42 +342,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     
-    //FUNZIONE CHE GESTISCE IL GAMEOVER
-       func gameOver(){
-           print("Game over!")
-           let scene = GameOverView(size: size)
-           scene.scaleMode = scaleMode
-           view!.presentScene (scene, transition: .doorsCloseVertical(withDuration: 0.8))
-       }
-       
-       func didBegin(_ contact: SKPhysicsContact) {
-           print("SONO QUI")
-           var firstBody : SKPhysicsBody
-           var secondBody : SKPhysicsBody
-           
-           if contact.bodyA.categoryBitMask < contact.bodyB.categoryBitMask{
-               firstBody = contact.bodyA
-               secondBody = contact.bodyB
-           }
-           else{
-               firstBody = contact.bodyB
-               secondBody = contact.bodyA
-           }
-           if(firstBody.categoryBitMask & PhysicsCategory.player != 0) &&
-               (secondBody.categoryBitMask & PhysicsCategory.waste != 0){
-               collisionFunc(player: firstBody.node as! SKSpriteNode, waste:
-                               secondBody.node as! SKSpriteNode)
-           }/*else if(firstBody.categoryBitMask & PhysicsCategory.player == 0) &&
-                       (secondBody.categoryBitMask & PhysicsCategory.waste == 0){
-               notCollisionFunc(player: firstBody.node as! SKSpriteNode, waste:
-                                   secondBody.node as! SKSpriteNode)
-           }*/
-       }
-   }
-
     
-    /*func didBegin(_ contact: SKPhysicsContact) {
-        
+    //FUNZIONE CHE GESTISCE IL GAMEOVER
+    func gameOver(){
+        //print("Game over!")
+        ScoreGenerator.sharedInstance.setTopScore(score)
+        let scene = GameOverView(size: size)
+        scene.scaleMode = scaleMode
+        view!.presentScene (scene, transition: .doorsCloseVertical(withDuration: 0.8))
+    }
+    
+    
+    
+    
+    func didBegin(_ contact: SKPhysicsContact) {
         var firstBody: SKPhysicsBody
         var secondBody: SKPhysicsBody
         
@@ -277,94 +366,33 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             firstBody = contact.bodyB
             secondBody = contact.bodyA
         }
-        
-        if let playerNode = firstBody.node as? SKSpriteNode, let wasteNode = secondBody.node as? SKSpriteNode {
-            // Verifica se la collisione coinvolge il giocatore e il rifiuto
-            // let wasteCategory = wasteNode.name?.components(separatedBy: CharacterSet.decimalDigits).first
-            // let playerCategory = playerNode.name
-            
-            let wasteCategory = currentWaste
+        if let playerNode = firstBody.node as? SKSpriteNode,
+            let wasteNode = secondBody.node as? SKSpriteNode,
+            let wasteType = wasteNode.userData?.value(forKey: "wasteType") as? String {
             let playerCategory = currentBin
-            
-            if wasteCategory != nil || playerCategory != nil {
-                if playerCategory == "bianco"  {
-                    if wasteCategory == "paper1" {
-                        // La collisione avviene tra "bianco" (cestino) e "paper" (rifiuto)
-                        collisionFunc(player: playerNode, waste: wasteNode)
-                        print("PRESO")
-                    } else {
-                        notCollisionFunc(waste: wasteNode)
-                        print("NON PRESO")
-                    }
-                } else if playerCategory == "giallo" {
-                    if wasteCategory == "plastic1" {
-                        // La collisione avviene tra "giallo" (cestino) e "plastica" (rifiuto)
-                        collisionFunc(player: playerNode, waste: wasteNode)
-                        print("PRESO")
-                    } else {
-                        notCollisionFunc(waste: wasteNode)
-                        print("NON PRESO")
-                    }
-                } else if playerCategory == "grigio" {
-                    if wasteCategory == "indifferenziato1" {
-                        // La collisione avviene tra "grigio" (cestino) e "generale" (rifiuto)
-                        collisionFunc(player: playerNode, waste: wasteNode)
-                        print("PRESO")
-                    } else {
-                        notCollisionFunc(waste: wasteNode)
-                        print("NON PRESO")
-                    }
+
+            if playerCategory == "bianco" {
+                if wasteType.hasPrefix("paper") {
+                    collisionFunc(player: playerNode, waste: wasteNode)
                 } else {
-                    // Il giocatore non corrisponde a nessuna categoria nota
                     notCollisionFunc(waste: wasteNode)
                 }
+            } else if playerCategory == "giallo" {
+                if wasteType.hasPrefix("plastic") {
+                    collisionFunc(player: playerNode, waste: wasteNode)
+                } else {
+                    notCollisionFunc(waste: wasteNode)
+                }
+            } else if playerCategory == "marrone" {
+                if wasteType.hasPrefix("indifferenziato") {
+                    collisionFunc(player: playerNode, waste: wasteNode)
+                } else {
+                    notCollisionFunc(waste: wasteNode)
+                }
+            } else {
+                notCollisionFunc(waste: wasteNode)
             }
-
         }
-    }*/
-    
-    
-    
-    /*func didBegin(_ contact: SKPhysicsContact) {
-     print("AJAAJJA!")
-     var firstBody: SKPhysicsBody
-     var secondBody: SKPhysicsBody
-     
-     if contact.bodyA.categoryBitMask < contact.bodyB.categoryBitMask {
-     firstBody = contact.bodyA
-     secondBody = contact.bodyB
-     } else {
-     firstBody = contact.bodyB
-     secondBody = contact.bodyA
-     }
-     
-     let playerNode = firstBody.node as? SKSpriteNode
-     let wasteNode = secondBody.node as? SKSpriteNode
-     // Controlla se la collisione coinvolge il giocatore e il rifiuto
-     let wasteCategory = wasteNode?.name?.components(separatedBy: CharacterSet.decimalDigits).first
-     let playerCategory = playerNode?.texture?.description.components(separatedBy: CharacterSet.decimalDigits).first
-     
-     
-     
-     // La collisione avviene tra il giocatore e il rifiuto corrispondente
-     if playerCategory == "bianco" && wasteCategory!.hasPrefix("papere") && (firstBody.categoryBitMask & PhysicsCategory.player != 0) &&
-     (secondBody.categoryBitMask & PhysicsCategory.waste != 0) {
-     print("BIANCO")
-     // La collisione avviene tra "bianco" (cestino) e "paper" (rifiuto)
-     collisionFunc(player: playerNode!, waste: wasteNode!)
-     } else if playerCategory == "giallo" && wasteCategory!.hasPrefix("plastica") && (firstBody.categoryBitMask & PhysicsCategory.player != 0) &&
-     (secondBody.categoryBitMask & PhysicsCategory.waste != 0) {
-     print("GIALLO")
-     // La collisione avviene tra "giallo" (cestino) e "bottle" (rifiuto)
-     collisionFunc(player: playerNode!, waste: wasteNode!)
-     } else if playerCategory == "grigio" && wasteCategory!.hasPrefix("generale") && (firstBody.categoryBitMask & PhysicsCategory.player != 0) &&
-     (secondBody.categoryBitMask & PhysicsCategory.waste != 0) {
-     print("GRIGIO")
-     // La collisione avviene tra "grigio" (cestino) e "general" (rifiuto)
-     collisionFunc(player: playerNode!, waste: wasteNode!)
-     } else {
-     // La collisione non è tra il giocatore e il rifiuto corrispondente
-     notCollisionFunc(waste: wasteNode!)
-     }
-     }*/
-
+        
+    }
+}
