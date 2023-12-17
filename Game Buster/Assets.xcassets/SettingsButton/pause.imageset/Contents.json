@@ -6,10 +6,12 @@
       "scale" : "1x"
     },
     {
+      "filename" : "Pause pink@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "Pause pink@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

@@ -17,6 +17,8 @@ struct ContentView: View {
         let scene = MainMenu()
         scene.size = CGSize(width: screenWidth, height: screenHeight)
         scene.scaleMode = .fill
+        AudioManager.shared.playBackgroundMusic()
+
         return scene
     }
     

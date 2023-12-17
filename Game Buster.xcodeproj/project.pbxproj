@@ -11,6 +11,11 @@
 		273E16FF2B2CBA4100E3AED9 /* ScoreBoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 273E16FE2B2CBA4100E3AED9 /* ScoreBoardView.swift */; };
 		273E17012B2CBAA100E3AED9 /* ScoreGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 273E17002B2CBAA100E3AED9 /* ScoreGenerator.swift */; };
 		273E170B2B2DBD6100E3AED9 /* PlaySound.swift in Sources */ = {isa = PBXBuildFile; fileRef = 273E170A2B2DBD6100E3AED9 /* PlaySound.swift */; };
+		273E17152B2F260300E3AED9 /* GameOver.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 273E17142B2F260300E3AED9 /* GameOver.mp3 */; };
+		273E17172B2F26B300E3AED9 /* Collision2.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 273E17162B2F26B300E3AED9 /* Collision2.mp3 */; };
+		273E17192B2F34C300E3AED9 /* NuovoBacgroundLoop.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 273E17182B2F34C300E3AED9 /* NuovoBacgroundLoop.mp3 */; };
+		273E171D2B2F6F9100E3AED9 /* falling.wav in Resources */ = {isa = PBXBuildFile; fileRef = 273E171C2B2F6F9000E3AED9 /* falling.wav */; };
+		273E171F2B2F74A600E3AED9 /* OnBoarding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 273E171E2B2F74A600E3AED9 /* OnBoarding.swift */; };
 		2796D8E12B260F9200BD9A47 /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2796D8E02B260F9200BD9A47 /* Main.swift */; };
 		2796D8E32B260F9200BD9A47 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2796D8E22B260F9200BD9A47 /* ContentView.swift */; };
 		2796D8E52B260F9300BD9A47 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2796D8E42B260F9300BD9A47 /* Assets.xcassets */; };
@@ -28,7 +33,11 @@
 		273E16FE2B2CBA4100E3AED9 /* ScoreBoardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreBoardView.swift; sourceTree = "<group>"; };
 		273E17002B2CBAA100E3AED9 /* ScoreGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreGenerator.swift; sourceTree = "<group>"; };
 		273E170A2B2DBD6100E3AED9 /* PlaySound.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaySound.swift; sourceTree = "<group>"; };
-		273E170F2B2DDF0800E3AED9 /* NuovoBacgroundLoop.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = NuovoBacgroundLoop.mp3; sourceTree = "<group>"; };
+		273E17142B2F260300E3AED9 /* GameOver.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = GameOver.mp3; sourceTree = "<group>"; };
+		273E17162B2F26B300E3AED9 /* Collision2.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Collision2.mp3; sourceTree = "<group>"; };
+		273E17182B2F34C300E3AED9 /* NuovoBacgroundLoop.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = NuovoBacgroundLoop.mp3; path = ../../../../NuovoBacgroundLoop.mp3; sourceTree = "<group>"; };
+		273E171C2B2F6F9000E3AED9 /* falling.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = falling.wav; sourceTree = "<group>"; };
+		273E171E2B2F74A600E3AED9 /* OnBoarding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnBoarding.swift; sourceTree = "<group>"; };
 		2796D8DD2B260F9200BD9A47 /* Game Buster.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Game Buster.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2796D8E02B260F9200BD9A47 /* Main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Main.swift; sourceTree = "<group>"; };
 		2796D8E22B260F9200BD9A47 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -57,7 +66,10 @@
 		273E170E2B2DDEFB00E3AED9 /* Sounds */ = {
 			isa = PBXGroup;
 			children = (
-				273E170F2B2DDF0800E3AED9 /* NuovoBacgroundLoop.mp3 */,
+				273E17182B2F34C300E3AED9 /* NuovoBacgroundLoop.mp3 */,
+				273E171C2B2F6F9000E3AED9 /* falling.wav */,
+				273E17162B2F26B300E3AED9 /* Collision2.mp3 */,
+				273E17142B2F260300E3AED9 /* GameOver.mp3 */,
 			);
 			path = Sounds;
 			sourceTree = "<group>";
@@ -86,14 +98,15 @@
 				2796D8E02B260F9200BD9A47 /* Main.swift */,
 				2796D8E22B260F9200BD9A47 /* ContentView.swift */,
 				2796D8F32B289A5700BD9A47 /* MainMenu.swift */,
+				273E171E2B2F74A600E3AED9 /* OnBoarding.swift */,
 				2796D8F52B289A7B00BD9A47 /* SettingsMenu.swift */,
 				2796D8F72B289A9000BD9A47 /* LearnMenu.swift */,
 				2796D8EE2B260FE300BD9A47 /* GameScene.swift */,
 				273E16FA2B2B586100E3AED9 /* GameOverView.swift */,
 				273E16FE2B2CBA4100E3AED9 /* ScoreBoardView.swift */,
 				273E17002B2CBAA100E3AED9 /* ScoreGenerator.swift */,
-				2796D8FB2B28BC9A00BD9A47 /* Clouds.sks */,
 				273E170A2B2DBD6100E3AED9 /* PlaySound.swift */,
+				2796D8FB2B28BC9A00BD9A47 /* Clouds.sks */,
 				2796D8E42B260F9300BD9A47 /* Assets.xcassets */,
 				2796D8E62B260F9300BD9A47 /* Preview Content */,
 			);
@@ -174,6 +187,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				273E17192B2F34C300E3AED9 /* NuovoBacgroundLoop.mp3 in Resources */,
+				273E171D2B2F6F9100E3AED9 /* falling.wav in Resources */,
+				273E17172B2F26B300E3AED9 /* Collision2.mp3 in Resources */,
+				273E17152B2F260300E3AED9 /* GameOver.mp3 in Resources */,
 				2796D8E82B260F9300BD9A47 /* Preview Assets.xcassets in Resources */,
 				2796D8E52B260F9300BD9A47 /* Assets.xcassets in Resources */,
 				2796D8FC2B28BC9A00BD9A47 /* Clouds.sks in Resources */,
@@ -197,6 +214,7 @@
 				2796D8E12B260F9200BD9A47 /* Main.swift in Sources */,
 				273E16FF2B2CBA4100E3AED9 /* ScoreBoardView.swift in Sources */,
 				2796D8F42B289A5700BD9A47 /* MainMenu.swift in Sources */,
+				273E171F2B2F74A600E3AED9 /* OnBoarding.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -343,7 +361,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.francescaferrini.ImageAndZstack;
+				PRODUCT_BUNDLE_IDENTIFIER = com.francescaferrini.binit;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -372,7 +390,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.francescaferrini.ImageAndZstack;
+				PRODUCT_BUNDLE_IDENTIFIER = com.francescaferrini.binit;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;

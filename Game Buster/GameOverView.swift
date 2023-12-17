@@ -49,6 +49,9 @@ class GameOverView: SKScene {
         let gameOver = SKSpriteNode(imageNamed: "GameOver")
         gameOver.position = CGPoint(x: size.width/2, y: size.height/2-90)
         gameOver.setScale(1.5)
+        DispatchQueue.global().async {
+            AudioManager.shared.playSoundEffect(sound: "GameOver", type: "mp3")
+        }
         addChild(gameOver)
         let scaleUp = SKAction.scale(to: 0.7, duration: 0.3)
         let scaleDown = SKAction.scale(to: 0.5, duration: 0.3)

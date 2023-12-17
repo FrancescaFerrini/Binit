@@ -17,6 +17,7 @@ struct PhysicsCategory{
     
 }
 
+var isPaused: Bool = false
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
@@ -31,7 +32,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     //var positionAdd:CGFloat = (x: 100, y: 100)
     var player: SKSpriteNode!
     var livesArray: [SKSpriteNode]!
-    var pauseButton: SKSpriteNode = SKSpriteNode(imageNamed: "pause")
+    var pauseButton: SKSpriteNode!
     var containerNode = SKNode()
     
     private var screenWidth: CGFloat { UIScreen.main.bounds.size.width }
@@ -60,8 +61,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         addSwipeGesture()
         initializeScore()
         addLives(lives: 3)
-        //addPause()
         addWaste()
+        addPause()
         physicsWorld.gravity = CGVector(dx: 0, dy: 0)
         physicsWorld.contactDelegate = self
         fallingWasteTime =  Timer.scheduledTimer(timeInterval: initialTimeInterval, target: self, selector: #selector(addWaste), userInfo: nil, repeats: true)
@@ -80,7 +81,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let playerInitialPosition = CGPoint(x: frame.width/2, y: frame.height/7)
         setupBin(at: playerInitialPosition)
         addChild(background)
-        //playSound(sound: "NuovoBacgroundLoop", type: "mp3")
     }
 
     
@@ -123,9 +123,90 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         else{
             initialTimeInterval = 0.2
         }
-        
-       
     }
+    
+    
+    
+    
+    
+    func addPause() {
+        pauseButton = SKSpriteNode(imageNamed: "pause")
+        pauseButton.name = "pause"
+        pauseButton.setScale(0.4)
+        pauseButton.zPosition = 10
+        pauseButton.position = CGPoint(x: 350, y: self.frame.size.height - 100)
+        addChild(pauseButton)
+    }
+
+    func createPanel() {
+                let pausePanel = SKSpriteNode(imageNamed: "Button2")
+                pausePanel.name = "panel"
+                pausePanel.zPosition = 60.0
+                pausePanel.setScale(2.0)
+                pausePanel.position = CGPoint(x: 200, y: self.frame.size.height - 400)
+                addChild(pausePanel)
+
+                let play = SKSpriteNode(imageNamed: "play")
+                play.zPosition = 70.0
+                play.name = "play"
+                play.setScale(0.4)
+                play.position = CGPoint(x: -pausePanel.frame.width/2.0 + play.frame.width * 1.8 + 100, y: 0.0)
+                pausePanel.addChild(play)
+
+                let quit = SKSpriteNode(imageNamed: "Back1")
+                quit.zPosition = 70.0
+                quit.name = "Back1"
+                quit.setScale(0.3)
+                quit.position = CGPoint(x: pausePanel.frame.width/2.0 - quit.frame.width * 1.8 - 140, y: 0.0)
+                pausePanel.addChild(quit)
+            }
+
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+           super.touchesBegan(touches, with: event)
+           guard let touch = touches.first else {return}
+           let node = atPoint(touch.location(in: self))
+           
+        if node.name == "pause" {
+                   if !isPaused {
+                       createPanel()
+                       isPaused = true
+                       self.isPaused = true
+                       fallingWasteTime?.invalidate()
+                       changePlayerAssetTimer?.invalidate()
+                       increaseSpeedTimer?.invalidate()
+                       fallingWasteTime = nil
+                       changePlayerAssetTimer = nil
+                       increaseSpeedTimer = nil
+                   }
+               }
+           
+        if node.name == "play" {
+                   isPaused = false
+                   self.isPaused = false
+                   for child in children {
+                       if child.name == "panel" {
+                           child.removeFromParent()
+                           fallingWasteTime =  Timer.scheduledTimer(timeInterval: initialTimeInterval, target: self, selector: #selector(addWaste), userInfo: nil, repeats: true)
+                           changePlayerAssetTimer = Timer.scheduledTimer(timeInterval: 15.0, target: self, selector: #selector(changePlayerAsset), userInfo: nil, repeats: true)
+                           increaseSpeedTimer = Timer.scheduledTimer(timeInterval: 15.0, target: self, selector: #selector(increaseAnimationSpeed), userInfo: nil, repeats: true)
+                       }
+                   }
+               }
+           
+           if node.name == "Back1" {
+               let scene = ScoreBoardView()
+               scene.size = CGSize(width: screenWidth, height: screenHeight)
+               scene.scaleMode = .fill
+               view!.presentScene(scene, transition: .doorsOpenVertical(withDuration: 0.3))
+           }
+       }
+
+
+    
+    
+    
+    
+    
     
     //---FUNZIONE CHE RICHIAMA LO SWIPE---
     private func addSwipeGesture(){
@@ -148,15 +229,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         switch sender.direction {
         case .right:
             if player.position.x < thirdScreenWidth * 2 {
-                moveAction = SKAction.move(by: CGVector(dx: thirdScreenWidth, dy: 0), duration: 0.2)
+                moveAction = SKAction.move(by: CGVector(dx: thirdScreenWidth, dy: 0), duration: 0.1)
             } else {
-                moveAction = SKAction.move(by: CGVector(dx: 0, dy: 0), duration: 0.2)
+                moveAction = SKAction.move(by: CGVector(dx: 0, dy: 0), duration: 0.1)
             }
         case .left:
             if player.position.x > thirdScreenWidth {
-                moveAction = SKAction.move(by: CGVector(dx: -thirdScreenWidth, dy: 0), duration: 0.2)
+                moveAction = SKAction.move(by: CGVector(dx: -thirdScreenWidth, dy: 0), duration: 0.1)
             } else {
-                moveAction = SKAction.move(by: CGVector(dx: 0, dy: 0), duration: 0.2)
+                moveAction = SKAction.move(by: CGVector(dx: 0, dy: 0), duration: 0.1)
             }
         default:
             return
@@ -199,71 +280,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
-    //CREAZIONE TASTO PAUSA
-   /* func addPause(){
-        pauseButton.name = "pause"
-        pauseButton.setScale(0.5)
-        pauseButton.zPosition = 10
-        pauseButton.position = CGPoint(x: 350, y: self.frame.size.height - 2)
-        pauseButton.isUserInteractionEnabled = true
-        
-        addChild(pauseButton)
-    }
-    
-    //IMPLEMENTO IL PANNELLO DELLA PAUSA
-    func createPanel(){
-        
-        let panel = SKSpriteNode(imageNamed: "rectangle")
-        panel.name = "panel"
-        panel.zPosition = 60.0
-        panel.setScale(0.7)
-        panel.position = CGPoint(x: 200, y: self.frame.size.height - 400)
-        addChild(panel)
-        
-        let play = SKSpriteNode(imageNamed: "play")
-        play.zPosition = 70.0
-        play.name = "play"
-        play.setScale(0.3)
-        play.position = CGPoint(x: -panel.frame.width/2.0 + play.frame.width*1.8, y:0.0)
-        panel.addChild(play)
-        
-        let quit = SKSpriteNode(imageNamed: "arrow")
-        quit.zPosition = 70.0
-        quit.name = "arrow"
-        quit.setScale(0.3)
-        quit.position = CGPoint(x: panel.frame.width/2.0 - quit.frame.width*1.8, y:0.0)
-        panel.addChild(quit)
-    }
-    
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        super.touchesBegan(touches, with: event)
-        
-        guard let touch = touches.first else { return }
-        let location = touch.location(in: self)
-        let touchedNode = atPoint(location)
-        
-        if touchedNode.name == "pause" {
-            if !isPaused {
-                createPanel()
-                isPaused = true
-            }
-        } else if touchedNode.name == "arrow" {
-            let scene = MainMenu()
-            scene.size = CGSize(width: screenWidth, height: screenHeight)
-            scene.scaleMode = .fill
-            view!.presentScene(scene, transition: .doorsOpenVertical(withDuration: 0.3))
-            changePlayerAssetTimer?.invalidate()
-            changePlayerAssetTimer = nil
-        } else if touchedNode.name == "play" {
-            isPaused = false
-            for child in children {
-                if child.name == "panel" {
-                    child.removeFromParent()
-                }
-            }
-        }
-    }*/
-    
     //---FUNZIONE CHE AGGIUNGE E GESTISCE LA CADUTA DEI RIFIUTI---
     @objc func addWaste(){
         //UTILIZZO LIBERIRA GAMEPLAYKIT
@@ -282,7 +298,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         waste.physicsBody?.contactTestBitMask = PhysicsCategory.player
         waste.physicsBody?.collisionBitMask = PhysicsCategory.none
         waste.physicsBody?.usesPreciseCollisionDetection = true
-        
+        let rotateAction = SKAction.rotate(byAngle: CGFloat.random(in: -CGFloat.pi...CGFloat.pi), duration: 1.0) // Rotazione randomica
+        waste.run(SKAction.repeatForever(rotateAction))
         
         waste.name = currentWaste
         waste.userData = NSMutableDictionary()
@@ -324,12 +341,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func collisionFunc(player: SKSpriteNode, waste: SKSpriteNode){
         //print("COLPITO")
         generator.impactOccurred()
+        DispatchQueue.global().async {
+            AudioManager.shared.playSoundEffect(sound: "Collision2", type: "mp3")
+        }
         waste.removeFromParent()
         score += 1
     }
     func notCollisionFunc(waste: SKSpriteNode){
         //print("NON COLPITO")
         waste.removeFromParent()
+        DispatchQueue.global().async {
+            AudioManager.shared.playSoundEffect(sound: "falling", type: "wav")
+        }
         if let live = livesArray.last{
             live.removeFromParent()
             livesArray.removeLast()

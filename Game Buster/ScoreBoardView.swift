@@ -37,12 +37,14 @@ class ScoreBoardView: SKScene {
         
         score.text = "Top Score: "
         score.fontSize = 40
+        score.fontName = "AmericanTypewriter-Bold"
         score.fontColor = .black
         score.position = CGPoint(x: size.width/2.0 - 20, y: size.height/2.0)
         addChild(score)
         
         topScore.text = "\(ScoreGenerator.sharedInstance.getTopScore())"
         topScore.fontSize = 40
+        topScore.fontName = "AmericanTypewriter-Bold"
         topScore.fontColor = .black
         topScore.position = CGPoint(x: size.width/2.0 + 100, y: size.height/2.0)
         addChild(topScore)

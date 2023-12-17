@@ -16,8 +16,8 @@ class MainMenu: SKScene {
     let binit = SKSpriteNode (imageNamed: "binit")
     let trashImage = SKSpriteNode (imageNamed: "trashImage")
     let startButton = SKSpriteNode (imageNamed: "startButton")
-    let settingsButton  = SKSpriteNode (imageNamed: "settingsButton")
-    let learnButton  = SKSpriteNode (imageNamed: "learnButton")
+    let settingsButton  = SKSpriteNode (imageNamed: "StoryboardButton")
+    let learnButton  = SKSpriteNode (imageNamed: "ScoreboardButton")
     let back = SKSpriteNode (imageNamed: "skyGradient")
     
     var clouds: SKEmitterNode!
@@ -41,11 +41,11 @@ class MainMenu: SKScene {
         startButton.position = CGPoint (x: size.width/2.0, y: size.height/3)
         addChild(startButton)
         
-        settingsButton.name = "settingsButton"
+        settingsButton.name = "StoryboardButton"
         settingsButton.position = CGPoint (x: size.width/3.0 - 25, y: size.height/5)
         addChild(settingsButton)
         
-        learnButton.name = "learnButton"
+        learnButton.name = "ScoreboardButton"
         learnButton.position = CGPoint (x: size.width/2.0 + 100, y: size.height/5)
         addChild(learnButton)
         
@@ -68,14 +68,14 @@ class MainMenu: SKScene {
             view!.presentScene(scene, transition: .doorsOpenVertical(withDuration: 0.3))
         }
         
-        if node.name == "settingsButton" {
+        if node.name == "StoryboardButton" {
             let scene = SettingsMenu()
             scene.size = CGSize(width: screenWidth, height: screenHeight)
             scene.scaleMode = .fill
             view!.presentScene(scene, transition: .doorsOpenVertical(withDuration: 0.3))
         }
         
-        if node.name == "learnButton" {
+        if node.name == "ScoreboardButton" {
             let scene = ScoreBoardView()
             scene.size = CGSize(width: screenWidth, height: screenHeight)
             scene.scaleMode = .fill

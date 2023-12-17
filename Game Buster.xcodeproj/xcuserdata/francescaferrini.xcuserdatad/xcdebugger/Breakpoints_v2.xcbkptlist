@@ -7,17 +7,17 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "DAC48B91-95B7-4A4C-B2F9-FAA50BBED0B2"
-            shouldBeEnabled = "Yes"
+            uuid = "70881F1F-2ED8-4DA9-9687-59A50FE340E2"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Game Buster/PlaySound.swift"
+            filePath = "Game Buster/GameScene.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "27"
-            endingLineNumber = "27"
-            landmarkName = "unknown"
-            landmarkType = "0">
+            startingLineNumber = "169"
+            endingLineNumber = "169"
+            landmarkName = "touchesBegan(_:with:)"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
