@@ -46,7 +46,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var initialTimeInterval: TimeInterval = 2.6
     var timeIntervalDecrease: TimeInterval = 0.2
     var possibleWaste = ["paper1", "paper2", "plastic1", "plastic2", "indifferenziato1","indifferenziato2"]
-    var possibleBin = ["bianco", "giallo", "marrone"]
+    var possibleBin = ["bianco", "giallo", "grigio3"]
     var increaseSpeedTimer: Timer?
     var score: Int = 0 {
         //didSet viene chiamata automaticamente ogni volta che la variabile score viene modificata, e viene utilizzata per aggiornare dinamicamente il testo dell'etichetta del punteggio.
@@ -146,17 +146,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 pausePanel.position = CGPoint(x: 200, y: self.frame.size.height - 400)
                 addChild(pausePanel)
 
-                let play = SKSpriteNode(imageNamed: "play")
+                let play = SKSpriteNode(imageNamed: "PlayP")
                 play.zPosition = 70.0
                 play.name = "play"
-                play.setScale(0.4)
-                play.position = CGPoint(x: -pausePanel.frame.width/2.0 + play.frame.width * 1.8 + 100, y: 0.0)
+                play.setScale(0.07)
+                play.position = CGPoint(x: -pausePanel.frame.width/2.0 + play.frame.width * 1.8 + 140, y: 0.0)
                 pausePanel.addChild(play)
 
-                let quit = SKSpriteNode(imageNamed: "Back1")
+                let quit = SKSpriteNode(imageNamed: "Back2")
                 quit.zPosition = 70.0
                 quit.name = "Back1"
-                quit.setScale(0.3)
+                quit.setScale(0.07)
                 quit.position = CGPoint(x: pausePanel.frame.width/2.0 - quit.frame.width * 1.8 - 140, y: 0.0)
                 pausePanel.addChild(quit)
             }
@@ -177,6 +177,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                        fallingWasteTime = nil
                        changePlayerAssetTimer = nil
                        increaseSpeedTimer = nil
+                       pauseButton.removeFromParent()
                    }
                }
            
@@ -189,6 +190,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                            fallingWasteTime =  Timer.scheduledTimer(timeInterval: initialTimeInterval, target: self, selector: #selector(addWaste), userInfo: nil, repeats: true)
                            changePlayerAssetTimer = Timer.scheduledTimer(timeInterval: 15.0, target: self, selector: #selector(changePlayerAsset), userInfo: nil, repeats: true)
                            increaseSpeedTimer = Timer.scheduledTimer(timeInterval: 15.0, target: self, selector: #selector(increaseAnimationSpeed), userInfo: nil, repeats: true)
+                           addChild(pauseButton)
                        }
                    }
                }
@@ -260,7 +262,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     //FUNZIONE PER IL CAMBIAMENTO DELL'ASSET
     @objc func changePlayerAsset() {
-        let binOptions = ["bianco", "giallo", "marrone"].randomElement() ?? "bianco"
+        let binOptions = ["bianco", "giallo", "grigio3"].randomElement() ?? "bianco"
         currentBin = binOptions
         player.texture = SKTexture(imageNamed: binOptions)
         
@@ -321,7 +323,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     } else if currentBin == "giallo" && wasteType.hasPrefix("plastic") {
                         self.notCollisionFunc(waste: waste)
                         //print("PERSO")
-                    } else if currentBin == "marrone" && wasteType.hasPrefix("indifferenziato") {
+                    } else if currentBin == "grigio3" && wasteType.hasPrefix("indifferenziato") {
                         self.notCollisionFunc(waste: waste)
                         //print("PERSO")
                     } else {
@@ -406,7 +408,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 } else {
                     notCollisionFunc(waste: wasteNode)
                 }
-            } else if playerCategory == "marrone" {
+            } else if playerCategory == "grigio3" {
                 if wasteType.hasPrefix("indifferenziato") {
                     collisionFunc(player: playerNode, waste: wasteNode)
                 } else {
